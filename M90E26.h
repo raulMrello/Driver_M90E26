@@ -233,6 +233,15 @@ public:
     virtual int32_t setMeasureCalib(uint16_t* pdata, uint8_t count);
 
 
+    /** Obtiene los parámetros eléctricos de la/las líneas solicitadas
+     *
+     * @param eparams Recibe los parámetros eléctricos
+     * @param keys Recibe los parámetros que se han leído <ElectricParamKeys>
+     * @param lines Líneas L1, L2, L3 (combinadas o no)
+     * @return Código de error OK=0, Error<0
+     */
+    virtual int32_t getElectricParams(ElectricParams eparams[], uint32_t keys[], uint8_t lines);
+
 private:
 
 	/** Timeout por defecto en recepción (en millis) */

@@ -547,6 +547,57 @@ int32_t M90E26::getMeanAparentPower(double* pdata){
 
 
 //------------------------------------------------------------------------------------
+int32_t M90E26::getElectricParams(ElectricParams eparams[], uint32_t keys[], uint8_t lines){
+	if(lines != LineL1){
+		return -1;
+	}
+	double pdata;
+	keys[0] = ElecKey_None;
+	if(getLineVoltage(&pdata)==0){
+		eparams[0].voltage = pdata;
+		keys[0] |= ElecKey_Voltage;
+	}
+	if(getLineCurrent(&pdata)==0){
+		eparams[0].current = pdata;
+		keys[0] |= ElecKey_Current;
+	}
+	if(getActivePower(&pdata)==0){
+		eparams[0].aPow = pdata;
+		keys[0] |= ElecKey_ActivePow;
+	}
+	if(getReactivePower(&pdata)==0){
+		eparams[0].rPow = pdata;
+		keys[0] |= ElecKey_ReactivePow;
+	}
+	if(getMeanAparentPower(&pdata)==0){
+		eparams[0].mPow = pdata;
+		keys[0] |= ElecKey_ApparentPow;
+	}
+	if(getPowerFactor(&pdata)==0){
+		eparams[0].pFactor = pdata;
+		keys[0] |= ElecKey_PowFactor;
+	}
+	if(getPhase(&pdata)==0){
+		eparams[0].phase = pdata;
+		keys[0] |= ElecKey_Phase;
+	}
+	if(getFrequency(&pdata)==0){
+		eparams[0].freq = pdata;
+		keys[0] |= ElecKey_Frequency;
+	}
+	if(getImportEnergy(&pdata)==0){
+		eparams[0].impEnergy = pdata;
+		keys[0] |= ElecKey_ImportEnergy;
+	}
+	if(getExportEnergy(&pdata)==0){
+		eparams[0].expEnergy = pdata;
+		keys[0] |= ElecKey_ExportEnergy;
+	}
+	return 0;
+}
+
+
+//------------------------------------------------------------------------------------
 int32_t M90E26::getEnergyData(uint16_t* pdata, uint8_t count){
 	if(count < ENERGY_REG_COUNT)
 		return -1;
@@ -614,12 +665,7 @@ int32_t M90E26::getMeasureCalib(uint16_t* pdata, uint8_t count){
 }
 
 
-/** Escribe todos los parámetros de calibración del medidor
- *
- *	@param pdata Datos de calibración
- *	@param count Número de parámetros consecutivos a escribir
- * 	@return Código de error OK = 0, Error < 0
- */
+//------------------------------------------------------------------------------------
 int32_t M90E26::setMeterCalib(uint16_t* pdata, uint8_t count){
 	if(count < METERCAL_REG_COUNT)
 		return -1;
@@ -634,12 +680,7 @@ int32_t M90E26::setMeterCalib(uint16_t* pdata, uint8_t count){
 }
 
 
-/** Escribe todos los parámetros de calibración de la medida
- *
- *	@param pdata Datos de calibración
- *	@param count Número de parámetros consecutivos a escribir
- * 	@return Código de error OK = 0, Error < 0
- */
+//------------------------------------------------------------------------------------
 int32_t M90E26::setMeasureCalib(uint16_t* pdata, uint8_t count){
 	if(count < MEASCAL_REG_COUNT)
 		return -1;
@@ -652,6 +693,7 @@ int32_t M90E26::setMeasureCalib(uint16_t* pdata, uint8_t count){
 	}
 	return 0;
 }
+
 
 //------------------------------------------------------------------------------------
 //-- PRIVATE METHODS IMPLEMENTATION --------------------------------------------------
