@@ -29,6 +29,46 @@ public:
 		ErrMeasCalib = 0x3000
 	};
 
+	/** Parámetros elétricos comunes */
+	struct ElectricParams{
+		double voltage;
+		double current;
+		double aPow;
+		double rPow;
+		double mPow;
+		double pFactor;
+		double thdVolt;
+		double thdAmp;
+		double freq;
+		double phase;
+		double impEnergy;
+		double expEnergy;
+	};
+
+
+	/** Identificadores de los parámetros elétricos anteriores */
+	enum ElectricParamKeys{
+		ElecKey_None		 = 0,
+		ElecKey_Voltage 	 = (1 << 0),
+		ElecKey_Current 	 = (1 << 1),
+		ElecKey_ActivePow 	 = (1 << 2),
+		ElecKey_ReactivePow  = (1 << 3),
+		ElecKey_ApparentPow  = (1 << 4),
+		ElecKey_PowFactor 	 = (1 << 5),
+		ElecKey_THDVoltage 	 = (1 << 6),
+		ElecKey_THDAmpere 	 = (1 << 7),
+		ElecKey_Frequency 	 = (1 << 8),
+		ElecKey_Phase 		 = (1 << 9),
+		ElecKey_ImportEnergy = (1 << 10),
+		ElecKey_ExportEnergy = (1 << 11),
+	};
+
+
+	/** Identificadores de las líneas monofásicas o trifásicas */
+	static const uint8_t LineL1 = (1 << 0);
+	static const uint8_t LineL2 = (1 << 1);
+	static const uint8_t LineL3 = (1 << 2);
+
 
     /** Constructor del interfaz
       */
@@ -216,6 +256,15 @@ public:
 	 */
     virtual int32_t setMeasureCalib(uint16_t* pdata, uint8_t count) = 0;
 
+
+    /** Obtiene los parámetros eléctricos de la/las líneas solicitadas
+     *
+     * @param eparams[3] Recibe los parámetros eléctricos
+     * @param keys[3] Recibe los parámetros que se han leído
+     * @param lines Líneas L1, L2, L3 (combinadas o no)
+     * @return Código de error OK=0, Error<0
+     */
+    virtual int32_t getElectricParams(ElectricParams eparams[], uint32_t keys[], uint8_t lines) = 0;
 };
  
 #endif      // AMDriver_H
