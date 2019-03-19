@@ -41,8 +41,8 @@ public:
 		double thdAmp;
 		double freq;
 		double phase;
-		double impEnergy;
-		double expEnergy;
+		double aEnergy;
+		double rEnergy;
 	};
 
 
@@ -59,8 +59,8 @@ public:
 		ElecKey_THDAmpere 	 = (1 << 7),
 		ElecKey_Frequency 	 = (1 << 8),
 		ElecKey_Phase 		 = (1 << 9),
-		ElecKey_ImportEnergy = (1 << 10),
-		ElecKey_ExportEnergy = (1 << 11),
+		ElecKey_ActiveEnergy = (1 << 10),
+		ElecKey_ReactiveEnergy = (1 << 11),
 	};
 
 
