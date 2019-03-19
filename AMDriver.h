@@ -72,11 +72,18 @@ public:
 
     /** Constructor del interfaz
       */
-	AMDriver(){}
+	AMDriver(const char* version = "") : _version(version){}
 
     /** Destructor por defecto
      */
     virtual ~AMDriver(){}
+
+
+    /** Obtiene el nombre de versión del driver
+     *
+     * @return Versión del driver
+     */
+    const char* getVersion(){ return _version; }
 
 
     /** Inicializa el chip de medida
@@ -265,6 +272,9 @@ public:
      * @return Código de error OK=0, Error<0
      */
     virtual int32_t getElectricParams(ElectricParams eparams[], uint32_t keys[], uint8_t lines) = 0;
+
+private:
+    const char* _version;
 };
  
 #endif      // AMDriver_H
