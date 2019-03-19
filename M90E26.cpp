@@ -586,12 +586,12 @@ int32_t M90E26::getElectricParams(ElectricParams eparams[], uint32_t keys[], uin
 		keys[0] |= ElecKey_Frequency;
 	}
 	if(getImportEnergy(&pdata)==0){
-		eparams[0].impEnergy = pdata;
-		keys[0] |= ElecKey_ImportEnergy;
+		eparams[0].aEnergy = pdata;
+		keys[0] |= ElecKey_ActiveEnergy;
 	}
 	if(getExportEnergy(&pdata)==0){
-		eparams[0].expEnergy = pdata;
-		keys[0] |= ElecKey_ExportEnergy;
+		eparams[0].rEnergy = pdata;
+		keys[0] |= ElecKey_ReactiveEnergy;
 	}
 	return 0;
 }
