@@ -179,7 +179,7 @@ static uint16_t checksum(uint16_t *data, int size){
 
 
 //------------------------------------------------------------------------------------
-M90E26::M90E26(PinName p_tx, PinName p_rx, uint32_t hz, PinName p_rst, PinName p_irq, uint32_t recv_timed_ms, bool defdbg) : AMDriver() {
+M90E26::M90E26(PinName p_tx, PinName p_rx, uint32_t hz, PinName p_rst, PinName p_irq, uint32_t recv_timed_ms, bool defdbg) : AMDriver("m90e26") {
 	_defdbg = defdbg;
 	_spi = NULL;
 	_out_cs = NULL;
