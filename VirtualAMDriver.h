@@ -23,7 +23,7 @@ public:
 
     /** Constructor del interfaz
       */
-	VirtualAMDriver() : AMDriver(){
+	VirtualAMDriver() : AMDriver("SIM", 1){
 		_ready = false;
 	}
 

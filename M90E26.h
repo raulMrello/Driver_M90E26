@@ -55,6 +55,25 @@ public:
     virtual ~M90E26(){}
 
 
+    /** Obtiene el número de analizadores
+     *
+     * @return Analizadores
+     */
+    virtual uint8_t getNumAnalyzers() {return 1;}
+
+
+    /** Obtiene el número de serie del analizador o "" si no existe
+     *
+     * @param analyzer Identificador del analizador [0,1,2..]
+     * @return Número de serie del analizador
+     */
+    virtual const char* getAnalyzerSerial(uint8_t analyzer){
+    	if(analyzer != 0)
+    		return "";
+    	return "M90E26_AN[0]";
+    }
+
+
     /** Inicializa el chip de medida
 	 *	@param meter_cal Array de datos de calibración del medidor
 	 *	@param meter_cal_count Número de elementos del array anterior

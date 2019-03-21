@@ -64,15 +64,10 @@ public:
 	};
 
 
-	/** Identificadores de las líneas monofásicas o trifásicas */
-	static const uint8_t LineL1 = (1 << 0);
-	static const uint8_t LineL2 = (1 << 1);
-	static const uint8_t LineL3 = (1 << 2);
-
-
     /** Constructor del interfaz
       */
-	AMDriver(const char* version = "") : _version(version){}
+	AMDriver(const char* version = "", uint8_t num_analyzers) : _version(version), _num_analyzers(num_analyzers){}
+
 
     /** Destructor por defecto
      */
@@ -84,6 +79,25 @@ public:
      * @return Versión del driver
      */
     const char* getVersion(){ return _version; }
+
+
+    /** Obtiene el número de analizadores
+     *
+     * @return Analizadores
+     */
+    virtual uint8_t getNumAnalyzers() {return _num_analyzers;}
+
+
+    /** Obtiene el número de serie del analizador o "" si no existe
+     * @param serial Recibe el número de serie
+     * @param max_len Máximo tamaño del número de serie
+     * @param analyzer Identificador del analizador [0,1,2..]
+     */
+    virtual void getAnalyzerSerial(char* serial, int max_len, uint8_t analyzer){
+    	if(analyzer >= _num_analyzers)
+    		strcpy(serial ,"");
+    	snprintf(serial, max_len-1, "%s_%d", getVersion(), analyzer);
+    }
 
 
     /** Inicializa el chip de medida
@@ -274,7 +288,11 @@ public:
     virtual int32_t getElectricParams(ElectricParams eparams[], uint32_t keys[], uint8_t lines) = 0;
 
 private:
+    /** Nombre de la versión del driver */
     const char* _version;
+
+    /** Número de analizadores integrados */
+    uint8_t _num_analyzers;
 };
  
 #endif      // AMDriver_H
