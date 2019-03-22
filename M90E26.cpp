@@ -179,7 +179,7 @@ static uint16_t checksum(uint16_t *data, int size){
 
 
 //------------------------------------------------------------------------------------
-M90E26::M90E26(PinName p_tx, PinName p_rx, uint32_t hz, PinName p_rst, PinName p_irq, uint32_t recv_timed_ms, bool defdbg) : AMDriver("m90e26") {
+M90E26::M90E26(PinName p_tx, PinName p_rx, uint32_t hz, PinName p_rst, PinName p_irq, uint32_t recv_timed_ms, bool defdbg) : AMDriver("M90E26", 1) {
 	_defdbg = defdbg;
 	_spi = NULL;
 	_out_cs = NULL;
@@ -218,7 +218,7 @@ M90E26::M90E26(PinName p_tx, PinName p_rx, uint32_t hz, PinName p_rst, PinName p
 
 
 //------------------------------------------------------------------------------------
-M90E26::M90E26(Serial* serial, PinName p_rst, PinName p_irq, uint32_t recv_timed_ms, bool defdbg) : AMDriver() {
+M90E26::M90E26(Serial* serial, PinName p_rst, PinName p_irq, uint32_t recv_timed_ms, bool defdbg) : AMDriver("M90E26", 1) {
 	_defdbg = defdbg;
 	_spi = NULL;
 	_out_cs = NULL;
@@ -251,7 +251,7 @@ M90E26::M90E26(Serial* serial, PinName p_rst, PinName p_irq, uint32_t recv_timed
 
 
 //------------------------------------------------------------------------------------
-M90E26::M90E26(SPI* spi, PinName p_rst, PinName p_irq, bool defdbg) : AMDriver() {
+M90E26::M90E26(SPI* spi, PinName p_rst, PinName p_irq, bool defdbg) : AMDriver("M90E26", 1) {
 	_defdbg = defdbg;
 	_serial = NULL;
 	_out_cs = NULL;
@@ -315,7 +315,7 @@ void M90E26::initEnergyIC(uint16_t* meter_cal, uint8_t meter_cal_count, uint16_t
 	if((meter_cal && meter_cal_count)){
 		//Set metering calibration values
 		DEBUG_TRACE_D(_EXPR_, _MODULE_, "Enviando Calibración del medidor");
-		setMeterCalib(meter_cal, meter_cal_count);
+		setMeterCalib(meter_cal, meter_cal_count, 0);
 
 		uint16_t crc = 0;
 		//Checksum 1. Needs to be calculated based off the above values.
@@ -329,7 +329,9 @@ void M90E26::initEnergyIC(uint16_t* meter_cal, uint8_t meter_cal_count, uint16_t
 	if((meas_cal && meas_cal_count)){
 		//Set measurement calibration values
 		DEBUG_TRACE_D(_EXPR_, _MODULE_, "Enviando Calibración de medidas");
-		setMeasureCalib(meas_cal, meas_cal_count);
+		setMeasureCalib(meas_cal, meas_cal_count, 0);
+
+
 		//Checksum 2. Needs to be calculated based off the above values.
 		uint16_t crc = 0;
 		if(read(CSTwo, &crc) < 0){
@@ -547,51 +549,51 @@ int32_t M90E26::getMeanAparentPower(double* pdata){
 
 
 //------------------------------------------------------------------------------------
-int32_t M90E26::getElectricParams(ElectricParams eparams[], uint32_t keys[], uint8_t lines){
-	if(lines != LineL1){
+int32_t M90E26::getElectricParams(ElectricParams& eparams, uint32_t& keys, uint8_t analyzer){
+	if(analyzer >= _num_analyzers){
 		return -1;
 	}
 	double pdata;
-	keys[0] = ElecKey_None;
+	keys = ElecKey_None;
 	if(getLineVoltage(&pdata)==0){
-		eparams[0].voltage = pdata;
-		keys[0] |= ElecKey_Voltage;
+		eparams.voltage = pdata;
+		keys |= ElecKey_Voltage;
 	}
 	if(getLineCurrent(&pdata)==0){
-		eparams[0].current = pdata;
-		keys[0] |= ElecKey_Current;
+		eparams.current = pdata;
+		keys |= ElecKey_Current;
 	}
 	if(getActivePower(&pdata)==0){
-		eparams[0].aPow = pdata;
-		keys[0] |= ElecKey_ActivePow;
+		eparams.aPow = pdata;
+		keys |= ElecKey_ActivePow;
 	}
 	if(getReactivePower(&pdata)==0){
-		eparams[0].rPow = pdata;
-		keys[0] |= ElecKey_ReactivePow;
+		eparams.rPow = pdata;
+		keys |= ElecKey_ReactivePow;
 	}
 	if(getMeanAparentPower(&pdata)==0){
-		eparams[0].mPow = pdata;
-		keys[0] |= ElecKey_ApparentPow;
+		eparams.mPow = pdata;
+		keys |= ElecKey_ApparentPow;
 	}
 	if(getPowerFactor(&pdata)==0){
-		eparams[0].pFactor = pdata;
-		keys[0] |= ElecKey_PowFactor;
+		eparams.pFactor = pdata;
+		keys |= ElecKey_PowFactor;
 	}
 	if(getPhase(&pdata)==0){
-		eparams[0].phase = pdata;
-		keys[0] |= ElecKey_Phase;
+		eparams.phase = pdata;
+		keys |= ElecKey_Phase;
 	}
 	if(getFrequency(&pdata)==0){
-		eparams[0].freq = pdata;
-		keys[0] |= ElecKey_Frequency;
+		eparams.freq = pdata;
+		keys |= ElecKey_Frequency;
 	}
 	if(getImportEnergy(&pdata)==0){
-		eparams[0].aEnergy = pdata;
-		keys[0] |= ElecKey_ActiveEnergy;
+		eparams.aEnergy = pdata;
+		keys |= ElecKey_ActiveEnergy;
 	}
 	if(getExportEnergy(&pdata)==0){
-		eparams[0].rEnergy = pdata;
-		keys[0] |= ElecKey_ReactiveEnergy;
+		eparams.rEnergy = pdata;
+		keys |= ElecKey_ReactiveEnergy;
 	}
 	return 0;
 }
@@ -632,8 +634,8 @@ int32_t M90E26::getMeasurementData(uint16_t* pdata, uint8_t count){
 
 
 //------------------------------------------------------------------------------------
-int32_t M90E26::getMeterCalib(uint16_t* pdata, uint8_t count){
-	if(count < METERCAL_REG_COUNT)
+int32_t M90E26::getMeterCalib(uint16_t* pdata, uint8_t count, uint8_t analyzer){
+	if(count < METERCAL_REG_COUNT || analyzer >= _num_analyzers)
 		return -1;
 
 	for(uint8_t i = 0; i<METERCAL_REG_COUNT; i++){
@@ -649,8 +651,8 @@ int32_t M90E26::getMeterCalib(uint16_t* pdata, uint8_t count){
 
 
 //------------------------------------------------------------------------------------
-int32_t M90E26::getMeasureCalib(uint16_t* pdata, uint8_t count){
-	if(count < MEASCAL_REG_COUNT)
+int32_t M90E26::getMeasureCalib(uint16_t* pdata, uint8_t count, uint8_t analyzer){
+	if(count < METERCAL_REG_COUNT || analyzer >= _num_analyzers)
 		return -1;
 
 	for(uint8_t i = 0; i<MEASCAL_REG_COUNT; i++){
@@ -666,8 +668,8 @@ int32_t M90E26::getMeasureCalib(uint16_t* pdata, uint8_t count){
 
 
 //------------------------------------------------------------------------------------
-int32_t M90E26::setMeterCalib(uint16_t* pdata, uint8_t count){
-	if(count < METERCAL_REG_COUNT)
+int32_t M90E26::setMeterCalib(uint16_t* pdata, uint8_t count, uint8_t analyzer){
+	if(count < METERCAL_REG_COUNT || analyzer >= _num_analyzers)
 		return -1;
 
 	for(uint8_t i = 0; i<METERCAL_REG_COUNT; i++){
@@ -681,8 +683,8 @@ int32_t M90E26::setMeterCalib(uint16_t* pdata, uint8_t count){
 
 
 //------------------------------------------------------------------------------------
-int32_t M90E26::setMeasureCalib(uint16_t* pdata, uint8_t count){
-	if(count < MEASCAL_REG_COUNT)
+int32_t M90E26::setMeasureCalib(uint16_t* pdata, uint8_t count, uint8_t analyzer){
+	if(count < METERCAL_REG_COUNT || analyzer >= _num_analyzers)
 		return -1;
 
 	for(uint8_t i = 0; i<MEASCAL_REG_COUNT; i++){
