@@ -66,12 +66,19 @@ public:
 
     /** Constructor del interfaz
       */
-	AMDriver(const char* version = "", uint8_t num_analyzers) : _version(version), _num_analyzers(num_analyzers){}
+	AMDriver(const char* version, uint8_t num_analyzers) : _version(version), _num_analyzers(num_analyzers){}
 
 
     /** Destructor por defecto
      */
     virtual ~AMDriver(){}
+
+
+    /** Reasigna el valor de la versión utilizada
+     *
+     * @param version Nueva versión a implementar
+     */
+    void setVersion(const char* version) { _version = version; }
 
 
     /** Obtiene el nombre de versión del driver
@@ -246,48 +253,53 @@ public:
 	 *
      *	@param pdata Recibe el resultado
      *	@param count Número de parámetros consecutivos a leer
+     *	@param analyzer Analizador del que leer
 	 * 	@return Código de error OK = 0, Error < 0
 	 */
-    virtual int32_t getMeterCalib(uint16_t* pdata, uint8_t count) = 0;
+    virtual int32_t getMeterCalib(uint16_t* pdata, uint8_t count, uint8_t analyzer) = 0;
 
 
 	/** Lee todos los parámetros de calibración de la medida
 	 *
      *	@param pdata Recibe el resultado
      *	@param count Número de parámetros consecutivos a leer
+     *	@param analyzer Número de analizador a leer
 	 * 	@return Código de error OK = 0, Error < 0
 	 */
-    virtual int32_t getMeasureCalib(uint16_t* pdata, uint8_t count) = 0;
+    virtual int32_t getMeasureCalib(uint16_t* pdata, uint8_t count, uint8_t analyzer) = 0;
 
 
 	/** Escribe todos los parámetros de calibración del medidor
 	 *
      *	@param pdata Datos de calibración
      *	@param count Número de parámetros consecutivos a escribir
+     *	@param analyzer Número de analizador a leer
 	 * 	@return Código de error OK = 0, Error < 0
 	 */
-    virtual int32_t setMeterCalib(uint16_t* pdata, uint8_t count) = 0;
+    virtual int32_t setMeterCalib(uint16_t* pdata, uint8_t count, uint8_t analyzer) = 0;
 
 
 	/** Escribe todos los parámetros de calibración de la medida
 	 *
      *	@param pdata Datos de calibración
      *	@param count Número de parámetros consecutivos a escribir
+     *	@param analyzer Número de analizador a leer
 	 * 	@return Código de error OK = 0, Error < 0
 	 */
-    virtual int32_t setMeasureCalib(uint16_t* pdata, uint8_t count) = 0;
+    virtual int32_t setMeasureCalib(uint16_t* pdata, uint8_t count, uint8_t analyzer) = 0;
 
 
     /** Obtiene los parámetros eléctricos de la/las líneas solicitadas
      *
-     * @param eparams[3] Recibe los parámetros eléctricos
-     * @param keys[3] Recibe los parámetros que se han leído
-     * @param lines Líneas L1, L2, L3 (combinadas o no)
+     * @param eparams Recibe los parámetros eléctricos
+     * @param keys Recibe los parámetros que se han leído
+     * @param analyzer Número de analizador
      * @return Código de error OK=0, Error<0
      */
-    virtual int32_t getElectricParams(ElectricParams eparams[], uint32_t keys[], uint8_t lines) = 0;
+    virtual int32_t getElectricParams(ElectricParams& eparams, uint32_t& keys, uint8_t analyzer) = 0;
 
-private:
+protected:
+
     /** Nombre de la versión del driver */
     const char* _version;
 
