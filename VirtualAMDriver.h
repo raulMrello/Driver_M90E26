@@ -23,7 +23,7 @@ public:
 
     /** Constructor del interfaz
       */
-	VirtualAMDriver() : AMDriver(){
+	VirtualAMDriver(const char* version = "SIM") : AMDriver(version, 1){
 		_ready = false;
 	}
 
@@ -213,9 +213,12 @@ public:
 	 *
      *	@param pdata Recibe el resultado
      *	@param count Número de parámetros consecutivos a leer
+     *	@param analyzer Analizador del que leer
 	 * 	@return Código de error OK = 0, Error < 0
 	 */
-    virtual int32_t getMeterCalib(uint16_t* pdata, uint8_t count){
+    virtual int32_t getMeterCalib(uint16_t* pdata, uint8_t count, uint8_t analyzer){
+    	if(analyzer >= _num_analyzers)
+    		return -1;
     	return ErrOK;
     }
 
@@ -224,9 +227,12 @@ public:
 	 *
      *	@param pdata Recibe el resultado
      *	@param count Número de parámetros consecutivos a leer
+     *	@param analyzer Número de analizador a leer
 	 * 	@return Código de error OK = 0, Error < 0
 	 */
-    virtual int32_t getMeasureCalib(uint16_t* pdata, uint8_t count){
+    virtual int32_t getMeasureCalib(uint16_t* pdata, uint8_t count, uint8_t analyzer){
+    	if(analyzer >= _num_analyzers)
+    		return -1;
     	return ErrOK;
     }
 
@@ -235,9 +241,12 @@ public:
 	 *
      *	@param pdata Datos de calibración
      *	@param count Número de parámetros consecutivos a escribir
+     *	@param analyzer Número de analizador a leer
 	 * 	@return Código de error OK = 0, Error < 0
 	 */
-    virtual int32_t setMeterCalib(uint16_t* pdata, uint8_t count){
+    virtual int32_t setMeterCalib(uint16_t* pdata, uint8_t count, uint8_t analyzer){
+    	if(analyzer >= _num_analyzers)
+    		return -1;
     	return ErrOK;
     }
 
@@ -246,9 +255,12 @@ public:
 	 *
      *	@param pdata Datos de calibración
      *	@param count Número de parámetros consecutivos a escribir
+     *	@param analyzer Número de analizador a leer
 	 * 	@return Código de error OK = 0, Error < 0
 	 */
-    virtual int32_t setMeasureCalib(uint16_t* pdata, uint8_t count){
+    virtual int32_t setMeasureCalib(uint16_t* pdata, uint8_t count, uint8_t analyzer){
+    	if(analyzer >= _num_analyzers)
+    		return -1;
     	return ErrOK;
     }
 
@@ -256,14 +268,12 @@ public:
     /** Obtiene los parámetros eléctricos de la/las líneas solicitadas
      *
      * @param eparams Recibe los parámetros eléctricos
-     * @param keys Recibe los parámetros que se han leído <ElectricParamKeys>
-     * @param lines Líneas L1, L2, L3 (combinadas o no)
+     * @param keys Recibe los parámetros que se han leído
+     * @param analyzer Número de analizador
      * @return Código de error OK=0, Error<0
      */
-    virtual int32_t getElectricParams(ElectricParams eparams[], uint32_t keys[], uint8_t lines){
-    	keys[0] = ElecKey_None;
-    	keys[1] = ElecKey_None;
-    	keys[2] = ElecKey_None;
+    virtual int32_t getElectricParams(ElectricParams& eparams, uint32_t& keys, uint8_t analyzer){
+    	keys = ElecKey_None;
     	return 0;
     }
 private:
