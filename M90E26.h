@@ -55,6 +55,25 @@ public:
     virtual ~M90E26(){}
 
 
+    /** Obtiene el número de analizadores
+     *
+     * @return Analizadores
+     */
+    virtual uint8_t getNumAnalyzers() {return 1;}
+
+
+    /** Obtiene el número de serie del analizador o "" si no existe
+     *
+     * @param analyzer Identificador del analizador [0,1,2..]
+     * @return Número de serie del analizador
+     */
+    virtual const char* getAnalyzerSerial(uint8_t analyzer){
+    	if(analyzer != 0)
+    		return "";
+    	return "M90E26_AN[0]";
+    }
+
+
     /** Inicializa el chip de medida
 	 *	@param meter_cal Array de datos de calibración del medidor
 	 *	@param meter_cal_count Número de elementos del array anterior
@@ -201,46 +220,50 @@ public:
 	 *
      *	@param pdata Recibe el resultado
      *	@param count Número de parámetros consecutivos a leer
+     *	@param analyzer Analizador del que leer
 	 * 	@return Código de error OK = 0, Error < 0
 	 */
-    virtual int32_t getMeterCalib(uint16_t* pdata, uint8_t count);
+    virtual int32_t getMeterCalib(uint16_t* pdata, uint8_t count, uint8_t analyzer);
 
 
 	/** Lee todos los parámetros de calibración de la medida
 	 *
      *	@param pdata Recibe el resultado
      *	@param count Número de parámetros consecutivos a leer
+     *	@param analyzer Número de analizador a leer
 	 * 	@return Código de error OK = 0, Error < 0
 	 */
-    virtual int32_t getMeasureCalib(uint16_t* pdata, uint8_t count);
+    virtual int32_t getMeasureCalib(uint16_t* pdata, uint8_t count, uint8_t analyzer);
 
 
 	/** Escribe todos los parámetros de calibración del medidor
 	 *
      *	@param pdata Datos de calibración
      *	@param count Número de parámetros consecutivos a escribir
+     *	@param analyzer Número de analizador a leer
 	 * 	@return Código de error OK = 0, Error < 0
 	 */
-    virtual int32_t setMeterCalib(uint16_t* pdata, uint8_t count);
+    virtual int32_t setMeterCalib(uint16_t* pdata, uint8_t count, uint8_t analyzer);
 
 
 	/** Escribe todos los parámetros de calibración de la medida
 	 *
      *	@param pdata Datos de calibración
      *	@param count Número de parámetros consecutivos a escribir
+     *	@param analyzer Número de analizador a leer
 	 * 	@return Código de error OK = 0, Error < 0
 	 */
-    virtual int32_t setMeasureCalib(uint16_t* pdata, uint8_t count);
+    virtual int32_t setMeasureCalib(uint16_t* pdata, uint8_t count, uint8_t analyzer);
 
 
     /** Obtiene los parámetros eléctricos de la/las líneas solicitadas
      *
      * @param eparams Recibe los parámetros eléctricos
-     * @param keys Recibe los parámetros que se han leído <ElectricParamKeys>
-     * @param lines Líneas L1, L2, L3 (combinadas o no)
+     * @param keys Recibe los parámetros que se han leído
+     * @param analyzer Número de analizador
      * @return Código de error OK=0, Error<0
      */
-    virtual int32_t getElectricParams(ElectricParams eparams[], uint32_t keys[], uint8_t lines);
+    virtual int32_t getElectricParams(ElectricParams& eparams, uint32_t& keys, uint8_t analyzer);
 
 private:
 
